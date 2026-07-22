@@ -19,9 +19,10 @@
     {
       "id": "sit-to-stand",
       "section": "Strength",
-      "name": "Sit to Stand",
+      "name": "Squats",
       "durationSeconds": 40,
-      "instruction": "Stand from a stable chair with control, then sit slowly."
+      "instruction": "Squat slowly.",
+      "media": "media/squats.mp4"
     },
     {
       "id": "wall-push-ups",
