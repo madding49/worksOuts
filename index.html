@@ -294,6 +294,17 @@
     let isPaused = false;
     let wakeLock = null;
     let audioContext = null;
+    let preferredVoice = null;
+
+    const preferredVoiceNames = [
+      "Google UK English Female",
+      "Microsoft Sonia Online (Natural) - English (United Kingdom)",
+      "Microsoft Sonia",
+      "Microsoft Hazel",
+      "Serena",
+      "Kate",
+      "Stephanie"
+    ];
 
     function showScreen(screenName) {
       Object.values(screens).forEach((screen) => screen.classList.remove("active"));
@@ -331,11 +342,44 @@
         `${(currentExerciseIndex / workout.exercises.length) * 100}%`;
     }
 
+    function selectPreferredVoice() {
+      if (!("speechSynthesis" in window)) return;
+
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices.length) return;
+
+      preferredVoice =
+        preferredVoiceNames
+          .map((name) =>
+            voices.find((voice) =>
+              voice.name.toLowerCase().includes(name.toLowerCase())
+            )
+          )
+          .find(Boolean) ||
+        voices.find((voice) =>
+          voice.lang.toLowerCase() === "en-gb" &&
+          /female|sonia|hazel|serena|kate|stephanie/i.test(voice.name)
+        ) ||
+        voices.find((voice) => voice.lang.toLowerCase() === "en-gb") ||
+        voices.find((voice) => voice.lang.toLowerCase().startsWith("en")) ||
+        null;
+    }
+
     function speak(text) {
       if (!("speechSynthesis" in window)) return;
+
+      if (!preferredVoice) selectPreferredVoice();
+
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-GB";
       utterance.rate = 0.95;
+      utterance.pitch = 1;
+
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+
       window.speechSynthesis.speak(utterance);
     }
 
@@ -533,6 +577,15 @@
         await requestWakeLock();
       }
     });
+
+
+    if ("speechSynthesis" in window) {
+      selectPreferredVoice();
+      window.speechSynthesis.addEventListener(
+        "voiceschanged",
+        selectPreferredVoice
+      );
+    }
 
     buttons.start.addEventListener("click", startWorkout);
     buttons.pause.addEventListener("click", togglePause);
