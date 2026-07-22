@@ -342,27 +342,51 @@
         `${(currentExerciseIndex / workout.exercises.length) * 100}%`;
     }
 
+    function isLikelyFemaleVoice(voice) {
+      const name = voice.name.toLowerCase();
+      const femaleNames = /female|sonia|hazel|serena|kate|stephanie|samantha|victoria|karen|moira|fiona|tessa|ava|allison|susan|zira|aria|jenny|libby|natasha/i;
+      const maleNames = /male|david|mark|daniel|george|ryan|james|thomas|alex|arthur|oliver|guy|aaron|fred|ralph/i;
+
+      return femaleNames.test(name) && !maleNames.test(name);
+    }
+
     function selectPreferredVoice() {
       if (!("speechSynthesis" in window)) return;
 
       const voices = window.speechSynthesis.getVoices();
       if (!voices.length) return;
 
+      const availableFemaleVoices = voices.filter(isLikelyFemaleVoice);
+      console.table(
+        availableFemaleVoices.map((voice) => ({
+          name: voice.name,
+          language: voice.lang
+        }))
+      );
+
       preferredVoice =
         preferredVoiceNames
           .map((name) =>
-            voices.find((voice) =>
+            availableFemaleVoices.find((voice) =>
               voice.name.toLowerCase().includes(name.toLowerCase())
             )
           )
           .find(Boolean) ||
-        voices.find((voice) =>
-          voice.lang.toLowerCase() === "en-gb" &&
-          /female|sonia|hazel|serena|kate|stephanie/i.test(voice.name)
+        availableFemaleVoices.find(
+          (voice) => voice.lang.toLowerCase() === "en-gb"
         ) ||
-        voices.find((voice) => voice.lang.toLowerCase() === "en-gb") ||
-        voices.find((voice) => voice.lang.toLowerCase().startsWith("en")) ||
+        availableFemaleVoices.find((voice) =>
+          voice.lang.toLowerCase().startsWith("en")
+        ) ||
         null;
+
+      if (preferredVoice) {
+        console.info(
+          `Selected workout voice: ${preferredVoice.name} (${preferredVoice.lang})`
+        );
+      } else {
+        console.warn("No recognized female English voice is available on this device.");
+      }
     }
 
     function speak(text) {
