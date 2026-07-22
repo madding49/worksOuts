@@ -112,9 +112,9 @@
     .exercise-card, .transition-card { text-align: center; }
     .exercise-image-wrap {
       position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      margin: 0 0 22px;
+      width: min(100%, 520px);
+      aspect-ratio: 2 / 3;
+      margin: 0 auto 22px;
       overflow: hidden;
       border-radius: 20px;
       background: #eef2f7;
@@ -123,7 +123,8 @@
       width: 100%;
       height: 100%;
       display: none;
-      object-fit: cover;
+      object-fit: contain;
+      object-position: center;
       background: #eef2f7;
     }
     .exercise-image-wrap.show-video .exercise-video,
