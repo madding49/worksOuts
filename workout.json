@@ -1,0 +1,41 @@
+{
+  "title": "Morning Workout",
+  "transitionSeconds": 5,
+  "exercises": [
+    {
+      "id": "shoulder-rolls",
+      "section": "Warm-Up",
+      "name": "Shoulder Rolls",
+      "durationSeconds": 30,
+      "instruction": "Roll your shoulders slowly and comfortably."
+    },
+    {
+      "id": "march-in-place",
+      "section": "Warm-Up",
+      "name": "March in Place",
+      "durationSeconds": 30,
+      "instruction": "Stand tall and march at an easy pace."
+    },
+    {
+      "id": "sit-to-stand",
+      "section": "Strength",
+      "name": "Sit to Stand",
+      "durationSeconds": 40,
+      "instruction": "Stand from a stable chair with control, then sit slowly."
+    },
+    {
+      "id": "wall-push-ups",
+      "section": "Strength",
+      "name": "Wall Push-Ups",
+      "durationSeconds": 40,
+      "instruction": "Keep your body straight and move toward the wall with control."
+    },
+    {
+      "id": "calf-stretch",
+      "section": "Cool-Down",
+      "name": "Calf Stretch",
+      "durationSeconds": 30,
+      "instruction": "Keep the back heel down and hold a gentle stretch."
+    }
+  ]
+}
