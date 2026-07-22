@@ -346,6 +346,7 @@
     let wakeLock = null;
     let audioContext = null;
     let preferredVoice = null;
+    const imageSequenceStates = new WeakMap();
 
     const preferredVoiceNames = [
       "Google UK English Female",
@@ -381,7 +382,75 @@
       elements.durationTotal.textContent = formatMinutes(calculateWorkoutSeconds());
     }
 
+    function stopImageSequence(imageElement) {
+      const state = imageSequenceStates.get(imageElement);
+      if (state?.timerId !== null && state?.timerId !== undefined) {
+        clearTimeout(state.timerId);
+      }
+      imageSequenceStates.delete(imageElement);
+    }
+
+    function buildPingPongFrames(frames) {
+      if (frames.length <= 2) return [...frames, ...frames.slice(0, -1).reverse()];
+      return [...frames, ...frames.slice(1, -1).reverse()];
+    }
+
+    function startImageSequence(imageElement, wrapperElement, exercise) {
+      const sourceFrames = Array.isArray(exercise.frames)
+        ? exercise.frames.filter((frame) => typeof frame === "string" && frame.trim()).map((frame) => frame.trim())
+        : [];
+
+      if (!sourceFrames.length) return false;
+
+      const frames = exercise.pingPong === false
+        ? sourceFrames
+        : buildPingPongFrames(sourceFrames);
+      const frameDurationMs = Math.max(250, Number(exercise.frameDurationMs) || 1000);
+      const state = { frames, frameDurationMs, frameIndex: 0, timerId: null, paused: false };
+      imageSequenceStates.set(imageElement, state);
+
+      const showFrame = () => {
+        if (state.paused) return;
+        imageElement.src = state.frames[state.frameIndex];
+        state.frameIndex = (state.frameIndex + 1) % state.frames.length;
+        state.timerId = setTimeout(showFrame, state.frameDurationMs);
+      };
+
+      imageElement.onload = () => {
+        wrapperElement.classList.remove("missing", "show-video");
+        wrapperElement.classList.add("show-image");
+      };
+      imageElement.onerror = () => {
+        stopImageSequence(imageElement);
+        imageElement.removeAttribute("src");
+        wrapperElement.classList.remove("show-image");
+        wrapperElement.classList.add("missing");
+      };
+      imageElement.alt = `${exercise.name} demonstration`;
+      showFrame();
+      return true;
+    }
+
+    function setImageSequencePaused(imageElement, paused) {
+      const state = imageSequenceStates.get(imageElement);
+      if (!state) return;
+      state.paused = paused;
+      if (paused) {
+        if (state.timerId !== null) clearTimeout(state.timerId);
+        state.timerId = null;
+      } else if (state.timerId === null) {
+        const resume = () => {
+          if (state.paused) return;
+          imageElement.src = state.frames[state.frameIndex];
+          state.frameIndex = (state.frameIndex + 1) % state.frames.length;
+          state.timerId = setTimeout(resume, state.frameDurationMs);
+        };
+        resume();
+      }
+    }
+
     function clearMedia(videoElement, imageElement, wrapperElement) {
+      stopImageSequence(imageElement);
       videoElement.pause();
       videoElement.removeAttribute("src");
       videoElement.load();
@@ -396,6 +465,11 @@
       const imagePath = typeof exercise.image === "string" ? exercise.image.trim() : "";
 
       clearMedia(videoElement, imageElement, wrapperElement);
+
+      if (Array.isArray(exercise.frames) && exercise.frames.length) {
+        startImageSequence(imageElement, wrapperElement, exercise);
+        return;
+      }
 
       if (mediaPath) {
         videoElement.onloadeddata = async () => {
@@ -447,6 +521,14 @@
           video.preload = "metadata";
           video.muted = true;
           video.src = exercise.media.trim();
+        }
+        if (Array.isArray(exercise.frames)) {
+          exercise.frames.forEach((frame) => {
+            if (typeof frame === "string" && frame.trim()) {
+              const image = new Image();
+              image.src = frame.trim();
+            }
+          });
         }
         if (typeof exercise.image === "string" && exercise.image.trim()) {
           const image = new Image();
@@ -697,10 +779,13 @@
 
       if (isPaused) {
         elements.exerciseVideo.pause();
+        setImageSequencePaused(elements.exerciseImage, true);
       } else if (elements.exerciseImageWrap.classList.contains("show-video")) {
         elements.exerciseVideo.play().catch((error) =>
           console.warn("Exercise video could not resume", error)
         );
+      } else {
+        setImageSequencePaused(elements.exerciseImage, false);
       }
 
       speak(isPaused ? "Paused" : "Resume");
