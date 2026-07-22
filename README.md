@@ -1,2 +1,2 @@
 # worksOuts
-Workout project storage
+Workout project storage for ChayGPT
