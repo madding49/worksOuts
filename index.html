@@ -119,13 +119,15 @@
       border-radius: 20px;
       background: #eef2f7;
     }
-    .exercise-image {
+    .exercise-media {
       width: 100%;
       height: 100%;
-      display: block;
+      display: none;
       object-fit: cover;
+      background: #eef2f7;
     }
-    .exercise-image-wrap.missing .exercise-image { display: none; }
+    .exercise-image-wrap.show-video .exercise-video,
+    .exercise-image-wrap.show-image .exercise-image { display: block; }
     .exercise-image-fallback {
       position: absolute;
       inset: 0;
@@ -246,8 +248,9 @@
     <section id="transition-screen" class="screen transition-screen">
       <div class="card transition-card">
         <div id="transition-image-wrap" class="exercise-image-wrap missing">
-          <img id="transition-image" class="exercise-image" alt="" decoding="async">
-          <div class="exercise-image-fallback">Exercise image coming soon</div>
+          <video id="transition-video" class="exercise-media exercise-video" muted loop playsinline preload="auto"></video>
+          <img id="transition-image" class="exercise-media exercise-image" alt="" decoding="async">
+          <div class="exercise-image-fallback">Exercise media coming soon</div>
         </div>
         <p class="transition-label">Next exercise</p>
         <h2 id="transition-name" class="transition-name"></h2>
@@ -261,8 +264,9 @@
       </div>
       <div class="card exercise-card">
         <div id="exercise-image-wrap" class="exercise-image-wrap missing">
-          <img id="exercise-image" class="exercise-image" alt="" decoding="async">
-          <div class="exercise-image-fallback">Exercise image coming soon</div>
+          <video id="exercise-video" class="exercise-media exercise-video" muted loop playsinline preload="auto"></video>
+          <img id="exercise-image" class="exercise-media exercise-image" alt="" decoding="async">
+          <div class="exercise-image-fallback">Exercise media coming soon</div>
         </div>
         <p id="section-label" class="section-label"></p>
         <h2 id="exercise-name" class="exercise-name"></h2>
@@ -318,8 +322,10 @@
       transitionName: document.getElementById("transition-name"),
       transitionTimer: document.getElementById("transition-timer"),
       exerciseImageWrap: document.getElementById("exercise-image-wrap"),
+      exerciseVideo: document.getElementById("exercise-video"),
       exerciseImage: document.getElementById("exercise-image"),
       transitionImageWrap: document.getElementById("transition-image-wrap"),
+      transitionVideo: document.getElementById("transition-video"),
       transitionImage: document.getElementById("transition-image")
     };
 
@@ -375,32 +381,77 @@
       elements.durationTotal.textContent = formatMinutes(calculateWorkoutSeconds());
     }
 
-    function setExerciseImage(imageElement, wrapperElement, exercise) {
+    function clearMedia(videoElement, imageElement, wrapperElement) {
+      videoElement.pause();
+      videoElement.removeAttribute("src");
+      videoElement.load();
+      imageElement.removeAttribute("src");
+      imageElement.alt = "";
+      wrapperElement.classList.remove("show-video", "show-image");
+      wrapperElement.classList.add("missing");
+    }
+
+    function setExerciseMedia(videoElement, imageElement, wrapperElement, exercise, autoplay = false) {
+      const mediaPath = typeof exercise.media === "string" ? exercise.media.trim() : "";
       const imagePath = typeof exercise.image === "string" ? exercise.image.trim() : "";
 
-      imageElement.onload = () => wrapperElement.classList.remove("missing");
-      imageElement.onerror = () => {
-        imageElement.removeAttribute("src");
-        wrapperElement.classList.add("missing");
-      };
+      clearMedia(videoElement, imageElement, wrapperElement);
 
-      if (!imagePath) {
-        imageElement.removeAttribute("src");
-        imageElement.alt = "";
-        wrapperElement.classList.add("missing");
+      if (mediaPath) {
+        videoElement.onloadeddata = async () => {
+          wrapperElement.classList.remove("missing", "show-image");
+          wrapperElement.classList.add("show-video");
+          if (autoplay) {
+            try {
+              await videoElement.play();
+            } catch (error) {
+              console.warn("Exercise video could not autoplay", error);
+            }
+          }
+        };
+
+        videoElement.onerror = () => {
+          videoElement.removeAttribute("src");
+          videoElement.load();
+          if (imagePath) {
+            setExerciseMedia(videoElement, imageElement, wrapperElement, { ...exercise, media: "" }, autoplay);
+          } else {
+            wrapperElement.classList.add("missing");
+          }
+        };
+
+        videoElement.src = mediaPath;
+        videoElement.load();
         return;
       }
 
-      wrapperElement.classList.add("missing");
-      imageElement.alt = `${exercise.name} demonstration`;
-      imageElement.src = imagePath;
+      if (imagePath) {
+        imageElement.onload = () => {
+          wrapperElement.classList.remove("missing", "show-video");
+          wrapperElement.classList.add("show-image");
+        };
+        imageElement.onerror = () => {
+          imageElement.removeAttribute("src");
+          wrapperElement.classList.remove("show-image");
+          wrapperElement.classList.add("missing");
+        };
+        imageElement.alt = `${exercise.name} demonstration`;
+        imageElement.src = imagePath;
+      }
     }
 
-    function preloadExerciseImages() {
+    function preloadExerciseMedia() {
       workout.exercises.forEach((exercise) => {
-        if (typeof exercise.image !== "string" || !exercise.image.trim()) return;
-        const image = new Image();
-        image.src = exercise.image.trim();
+        if (typeof exercise.media === "string" && exercise.media.trim()) {
+          const video = document.createElement("video");
+          video.preload = "metadata";
+          video.muted = true;
+          video.src = exercise.media.trim();
+        }
+        if (typeof exercise.image === "string" && exercise.image.trim()) {
+          const image = new Image();
+          image.src = exercise.image.trim();
+        }
       });
     }
 
@@ -409,7 +460,13 @@
       elements.sectionLabel.textContent = exercise.section;
       elements.exerciseName.textContent = exercise.name;
       elements.instruction.textContent = exercise.instruction;
-      setExerciseImage(elements.exerciseImage, elements.exerciseImageWrap, exercise);
+      setExerciseMedia(
+        elements.exerciseVideo,
+        elements.exerciseImage,
+        elements.exerciseImageWrap,
+        exercise,
+        true
+      );
       elements.timer.textContent = secondsRemaining;
       elements.exerciseCount.textContent =
         `Exercise ${currentExerciseIndex + 1} of ${workout.exercises.length}`;
@@ -580,10 +637,12 @@
       let transitionSeconds = Math.max(1, Number(workout.transitionSeconds) || 5);
 
       elements.transitionName.textContent = nextExercise.name;
-      setExerciseImage(
+      setExerciseMedia(
+        elements.transitionVideo,
         elements.transitionImage,
         elements.transitionImageWrap,
-        nextExercise
+        nextExercise,
+        true
       );
       elements.transitionTimer.textContent = transitionSeconds;
       showScreen("transition");
@@ -623,6 +682,7 @@
 
     function moveToNextExercise() {
       clearTimer();
+      elements.exerciseVideo.pause();
       const nextIndex = currentExerciseIndex + 1;
       if (nextIndex >= workout.exercises.length) {
         finishWorkout();
@@ -634,6 +694,15 @@
     function togglePause() {
       isPaused = !isPaused;
       elements.pauseButton.textContent = isPaused ? "Resume" : "Pause";
+
+      if (isPaused) {
+        elements.exerciseVideo.pause();
+      } else if (elements.exerciseImageWrap.classList.contains("show-video")) {
+        elements.exerciseVideo.play().catch((error) =>
+          console.warn("Exercise video could not resume", error)
+        );
+      }
+
       speak(isPaused ? "Paused" : "Resume");
     }
 
@@ -665,7 +734,7 @@
           throw new Error("Workout file contains no exercises.");
         }
 
-        preloadExerciseImages();
+        preloadExerciseMedia();
         updateStartScreen();
         showScreen("start");
       } catch (error) {
