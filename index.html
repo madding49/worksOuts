@@ -2,53 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#172033">
   <title>Morning Workout</title>
-
   <style>
     :root {
-      font-family:
-        Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: #172033;
       background: #f2f4f7;
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
-      background:
-        linear-gradient(180deg, #e9edf4 0%, #f7f8fa 45%, #ffffff 100%);
+      background: linear-gradient(180deg, #e9edf4 0%, #f7f8fa 45%, #ffffff 100%);
     }
-
-    button {
-      font: inherit;
-    }
-
+    button { font: inherit; }
     .app {
       width: min(100%, 760px);
       min-height: 100vh;
       margin: 0 auto;
-      padding:
-        max(24px, env(safe-area-inset-top))
-        20px
-        max(28px, env(safe-area-inset-bottom));
+      padding: max(24px, env(safe-area-inset-top)) 20px max(28px, env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column;
     }
-
-    .app-header {
-      margin-bottom: 24px;
-    }
-
+    .app-header { margin-bottom: 24px; }
     .eyebrow {
       margin: 0 0 6px;
       color: #637083;
@@ -57,62 +35,40 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
     }
-
     h1 {
       margin: 0;
       font-size: clamp(2rem, 8vw, 3.4rem);
       line-height: 1;
       letter-spacing: -0.04em;
     }
-
-    .screen {
-      flex: 1;
-      display: none;
-    }
-
-    .screen.active {
-      display: flex;
-      flex-direction: column;
-    }
-
+    .screen { flex: 1; display: none; }
+    .screen.active { display: flex; flex-direction: column; }
     .card {
       padding: 28px;
       border: 1px solid rgba(23, 32, 51, 0.1);
       border-radius: 28px;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.92);
       box-shadow: 0 18px 55px rgba(23, 32, 51, 0.1);
     }
-
-    .intro-card {
-      margin: auto 0;
-    }
-
-    .intro-card h2 {
+    .intro-card, .complete-card { margin: auto 0; }
+    .intro-card h2, .complete-card h2 {
       margin: 0 0 12px;
-      font-size: clamp(1.8rem, 6vw, 2.8rem);
+      font-size: clamp(1.8rem, 6vw, 3.2rem);
       letter-spacing: -0.035em;
     }
-
-    .intro-card p {
+    .intro-card p, .complete-card p {
       margin: 0 0 24px;
       color: #566274;
       font-size: 1.05rem;
       line-height: 1.6;
     }
-
     .summary {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
       margin-bottom: 28px;
     }
-
-    .summary-item {
-      padding: 16px;
-      border-radius: 18px;
-      background: #eef2f7;
-    }
-
+    .summary-item { padding: 16px; border-radius: 18px; background: #eef2f7; }
     .summary-label {
       display: block;
       margin-bottom: 4px;
@@ -121,14 +77,8 @@
       font-weight: 700;
       text-transform: uppercase;
     }
-
-    .summary-value {
-      font-size: 1.4rem;
-      font-weight: 800;
-    }
-
-    .primary-button,
-    .secondary-button {
+    .summary-value { font-size: 1.4rem; font-weight: 800; }
+    .primary-button, .secondary-button {
       width: 100%;
       min-height: 60px;
       border: 0;
@@ -136,28 +86,14 @@
       cursor: pointer;
       font-weight: 800;
     }
-
     .primary-button {
       color: white;
       background: #172033;
       box-shadow: 0 10px 24px rgba(23, 32, 51, 0.24);
     }
-
-    .primary-button:active,
-    .secondary-button:active {
-      transform: translateY(1px);
-    }
-
-    .secondary-button {
-      margin-top: 12px;
-      color: #172033;
-      background: #e9edf3;
-    }
-
-    .workout-screen {
-      justify-content: center;
-    }
-
+    .secondary-button { margin-top: 12px; color: #172033; background: #e9edf3; }
+    .primary-button:active, .secondary-button:active { transform: translateY(1px); }
+    .workout-screen, .transition-screen { justify-content: center; }
     .progress-track {
       width: 100%;
       height: 10px;
@@ -166,7 +102,6 @@
       border-radius: 999px;
       background: #dfe4eb;
     }
-
     .progress-bar {
       width: 0;
       height: 100%;
@@ -174,12 +109,8 @@
       background: #172033;
       transition: width 0.3s ease;
     }
-
-    .exercise-card {
-      text-align: center;
-    }
-
-    .section-label {
+    .exercise-card, .transition-card { text-align: center; }
+    .section-label, .transition-label {
       min-height: 1.2em;
       margin: 0 0 12px;
       color: #6c7889;
@@ -188,16 +119,14 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
     }
-
-    .exercise-name {
+    .exercise-name, .transition-name {
       min-height: 2.2em;
       margin: 0;
       font-size: clamp(2.2rem, 10vw, 4.6rem);
       line-height: 1.05;
       letter-spacing: -0.05em;
     }
-
-    .timer {
+    .timer, .transition-timer {
       margin: 28px 0 18px;
       font-size: clamp(5rem, 25vw, 9rem);
       font-variant-numeric: tabular-nums;
@@ -205,7 +134,6 @@
       line-height: 0.9;
       letter-spacing: -0.07em;
     }
-
     .instruction {
       min-height: 3.2em;
       margin: 0 auto 28px;
@@ -213,30 +141,20 @@
       font-size: 1.1rem;
       line-height: 1.5;
     }
-
     .exercise-count {
       margin: 18px 0 0;
       color: #778294;
       font-size: 0.9rem;
       font-weight: 700;
     }
-
     .button-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
       margin-top: 18px;
     }
-
-    .button-row .secondary-button {
-      margin-top: 0;
-    }
-
-    .complete-card {
-      margin: auto 0;
-      text-align: center;
-    }
-
+    .button-row .secondary-button { margin-top: 0; }
+    .complete-card { text-align: center; }
     .complete-icon {
       display: grid;
       width: 84px;
@@ -249,20 +167,6 @@
       font-size: 2.4rem;
       font-weight: 900;
     }
-
-    .complete-card h2 {
-      margin: 0 0 12px;
-      font-size: clamp(2rem, 8vw, 3.2rem);
-      letter-spacing: -0.04em;
-    }
-
-    .complete-card p {
-      margin: 0 0 28px;
-      color: #596679;
-      font-size: 1.1rem;
-      line-height: 1.5;
-    }
-
     .error {
       margin: auto 0;
       padding: 24px;
@@ -271,20 +175,12 @@
       background: #ffe8e8;
       line-height: 1.5;
     }
-
     @media (max-width: 520px) {
-      .card {
-        padding: 22px;
-        border-radius: 24px;
-      }
-
-      .button-row {
-        grid-template-columns: 1fr;
-      }
+      .card { padding: 22px; border-radius: 24px; }
+      .button-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
-
 <body>
   <main class="app">
     <header class="app-header">
@@ -293,34 +189,32 @@
     </header>
 
     <section id="loading-screen" class="screen active">
-      <div class="card intro-card">
-        <p>Loading your workout…</p>
-      </div>
+      <div class="card intro-card"><p>Loading your workout…</p></div>
     </section>
 
     <section id="start-screen" class="screen">
       <div class="card intro-card">
         <h2 id="workout-title">Morning Workout</h2>
-
-        <p>
-          A simple guided routine. Press Start and follow each exercise.
-        </p>
-
+        <p>A simple guided routine. Press Start and follow each exercise.</p>
         <div class="summary">
           <div class="summary-item">
             <span class="summary-label">Exercises</span>
             <span id="exercise-total" class="summary-value">0</span>
           </div>
-
           <div class="summary-item">
             <span class="summary-label">Duration</span>
             <span id="duration-total" class="summary-value">0 min</span>
           </div>
         </div>
+        <button id="start-button" class="primary-button" type="button">Start Workout</button>
+      </div>
+    </section>
 
-        <button id="start-button" class="primary-button" type="button">
-          Start Workout
-        </button>
+    <section id="transition-screen" class="screen transition-screen">
+      <div class="card transition-card">
+        <p class="transition-label">Next exercise</p>
+        <h2 id="transition-name" class="transition-name"></h2>
+        <div id="transition-timer" class="transition-timer">5</div>
       </div>
     </section>
 
@@ -328,27 +222,16 @@
       <div class="progress-track" aria-hidden="true">
         <div id="progress-bar" class="progress-bar"></div>
       </div>
-
       <div class="card exercise-card">
         <p id="section-label" class="section-label"></p>
         <h2 id="exercise-name" class="exercise-name"></h2>
         <div id="timer" class="timer">0</div>
         <p id="instruction" class="instruction"></p>
-
-        <button id="pause-button" class="primary-button" type="button">
-          Pause
-        </button>
-
+        <button id="pause-button" class="primary-button" type="button">Pause</button>
         <div class="button-row">
-          <button id="restart-button" class="secondary-button" type="button">
-            Restart
-          </button>
-
-          <button id="skip-button" class="secondary-button" type="button">
-            Skip
-          </button>
+          <button id="restart-button" class="secondary-button" type="button">Restart</button>
+          <button id="skip-button" class="secondary-button" type="button">Skip</button>
         </div>
-
         <p id="exercise-count" class="exercise-count"></p>
       </div>
     </section>
@@ -358,18 +241,14 @@
         <div class="complete-icon">✓</div>
         <h2>Workout complete</h2>
         <p>You completed your Morning Workout.</p>
-
-        <button id="again-button" class="primary-button" type="button">
-          Do It Again
-        </button>
+        <button id="again-button" class="primary-button" type="button">Do It Again</button>
       </div>
     </section>
 
     <section id="error-screen" class="screen">
       <div class="error">
-        The workout could not be loaded. Confirm that
-        <strong>workout.json</strong> and <strong>index.html</strong>
-        are stored in the same repository folder.
+        The workout could not be loaded. Confirm that <strong>workout.json</strong>
+        and <strong>index.html</strong> are stored in the same repository folder.
       </div>
     </section>
   </main>
@@ -378,6 +257,7 @@
     const screens = {
       loading: document.getElementById("loading-screen"),
       start: document.getElementById("start-screen"),
+      transition: document.getElementById("transition-screen"),
       workout: document.getElementById("workout-screen"),
       complete: document.getElementById("complete-screen"),
       error: document.getElementById("error-screen")
@@ -393,7 +273,9 @@
       timer: document.getElementById("timer"),
       instruction: document.getElementById("instruction"),
       exerciseCount: document.getElementById("exercise-count"),
-      pauseButton: document.getElementById("pause-button")
+      pauseButton: document.getElementById("pause-button"),
+      transitionName: document.getElementById("transition-name"),
+      transitionTimer: document.getElementById("transition-timer")
     };
 
     const buttons = {
@@ -408,151 +290,230 @@
     let currentExerciseIndex = 0;
     let secondsRemaining = 0;
     let timerId = null;
+    let transitionTimerId = null;
     let isPaused = false;
+    let wakeLock = null;
+    let audioContext = null;
 
     function showScreen(screenName) {
-      Object.values(screens).forEach((screen) => {
-        screen.classList.remove("active");
-      });
-
+      Object.values(screens).forEach((screen) => screen.classList.remove("active"));
       screens[screenName].classList.add("active");
     }
 
     function calculateWorkoutSeconds() {
       const exerciseSeconds = workout.exercises.reduce(
-        (total, exercise) => total + exercise.durationSeconds,
-        0
+        (total, exercise) => total + exercise.durationSeconds, 0
       );
-
       const transitionSeconds =
-        Math.max(0, workout.exercises.length - 1) *
-        workout.transitionSeconds;
-
+        Math.max(0, workout.exercises.length - 1) * workout.transitionSeconds;
       return exerciseSeconds + transitionSeconds;
     }
 
     function formatMinutes(totalSeconds) {
-      const minutes = Math.max(1, Math.ceil(totalSeconds / 60));
-      return `${minutes} min`;
+      return `${Math.max(1, Math.ceil(totalSeconds / 60))} min`;
     }
 
     function updateStartScreen() {
       elements.workoutTitle.textContent = workout.title;
       elements.exerciseTotal.textContent = workout.exercises.length;
-      elements.durationTotal.textContent =
-        formatMinutes(calculateWorkoutSeconds());
+      elements.durationTotal.textContent = formatMinutes(calculateWorkoutSeconds());
     }
 
     function updateExerciseScreen() {
       const exercise = workout.exercises[currentExerciseIndex];
-
       elements.sectionLabel.textContent = exercise.section;
       elements.exerciseName.textContent = exercise.name;
       elements.instruction.textContent = exercise.instruction;
       elements.timer.textContent = secondsRemaining;
       elements.exerciseCount.textContent =
         `Exercise ${currentExerciseIndex + 1} of ${workout.exercises.length}`;
+      elements.progressBar.style.width =
+        `${(currentExerciseIndex / workout.exercises.length) * 100}%`;
+    }
 
-      const progress =
-        (currentExerciseIndex / workout.exercises.length) * 100;
+    function speak(text) {
+      if (!("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.95;
+      window.speechSynthesis.speak(utterance);
+    }
 
-      elements.progressBar.style.width = `${progress}%`;
+    function beep(frequency = 660, duration = 0.12) {
+      try {
+        audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        oscillator.frequency.value = frequency;
+        gain.gain.value = 0.08;
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + duration);
+      } catch (error) {
+        console.warn("Audio unavailable", error);
+      }
+    }
+
+    async function requestWakeLock() {
+      try {
+        if ("wakeLock" in navigator) {
+          wakeLock = await navigator.wakeLock.request("screen");
+        }
+      } catch (error) {
+        console.warn("Wake lock unavailable", error);
+      }
+    }
+
+    async function releaseWakeLock() {
+      try {
+        if (wakeLock) {
+          await wakeLock.release();
+          wakeLock = null;
+        }
+      } catch (error) {
+        console.warn("Wake lock release failed", error);
+      }
+    }
+
+    async function enterFullscreen() {
+      try {
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch (error) {
+        console.warn("Fullscreen unavailable", error);
+      }
     }
 
     function clearTimer() {
       if (timerId !== null) {
-        window.clearInterval(timerId);
+        clearInterval(timerId);
         timerId = null;
+      }
+    }
+
+    function clearTransitionTimer() {
+      if (transitionTimerId !== null) {
+        clearInterval(transitionTimerId);
+        transitionTimerId = null;
       }
     }
 
     function beginTimer() {
       clearTimer();
-
-      timerId = window.setInterval(() => {
-        if (isPaused) {
-          return;
-        }
+      timerId = setInterval(() => {
+        if (isPaused) return;
 
         secondsRemaining -= 1;
         elements.timer.textContent = secondsRemaining;
 
-        if (secondsRemaining <= 0) {
-          moveToNextExercise();
+        if (secondsRemaining === 5) speak("Five seconds remaining");
+
+        if (secondsRemaining <= 3 && secondsRemaining > 0) {
+          beep(secondsRemaining === 1 ? 880 : 660);
         }
+
+        if (secondsRemaining <= 0) moveToNextExercise();
       }, 1000);
     }
 
     function startExercise(index) {
       currentExerciseIndex = index;
-      secondsRemaining =
-        workout.exercises[currentExerciseIndex].durationSeconds;
+      secondsRemaining = workout.exercises[index].durationSeconds;
       isPaused = false;
-
       elements.pauseButton.textContent = "Pause";
       updateExerciseScreen();
+      showScreen("workout");
+      speak(workout.exercises[index].name);
       beginTimer();
     }
 
-    function startWorkout() {
-      showScreen("workout");
+    function beginTransition(nextIndex) {
+      clearTimer();
+      clearTransitionTimer();
+
+      const nextExercise = workout.exercises[nextIndex];
+      let transitionSeconds = Math.max(1, Number(workout.transitionSeconds) || 5);
+
+      elements.transitionName.textContent = nextExercise.name;
+      elements.transitionTimer.textContent = transitionSeconds;
+      showScreen("transition");
+      speak(`Next exercise. ${nextExercise.name}`);
+
+      transitionTimerId = setInterval(() => {
+        transitionSeconds -= 1;
+        elements.transitionTimer.textContent = transitionSeconds;
+
+        if (transitionSeconds <= 3 && transitionSeconds > 0) {
+          beep(transitionSeconds === 1 ? 880 : 660);
+        }
+
+        if (transitionSeconds <= 0) {
+          clearTransitionTimer();
+          beep(1040, 0.2);
+          startExercise(nextIndex);
+        }
+      }, 1000);
+    }
+
+    async function startWorkout() {
+      await requestWakeLock();
+      await enterFullscreen();
       startExercise(0);
     }
 
-    function finishWorkout() {
+    async function finishWorkout() {
       clearTimer();
+      clearTransitionTimer();
       elements.progressBar.style.width = "100%";
       showScreen("complete");
+      speak("Workout complete");
+      beep(1040, 0.25);
+      await releaseWakeLock();
     }
 
     function moveToNextExercise() {
       clearTimer();
-
       const nextIndex = currentExerciseIndex + 1;
-
       if (nextIndex >= workout.exercises.length) {
         finishWorkout();
-        return;
+      } else {
+        beginTransition(nextIndex);
       }
-
-      startExercise(nextIndex);
     }
 
     function togglePause() {
       isPaused = !isPaused;
       elements.pauseButton.textContent = isPaused ? "Resume" : "Pause";
+      speak(isPaused ? "Paused" : "Resume");
     }
 
     function restartCurrentExercise() {
       startExercise(currentExerciseIndex);
     }
 
-    function resetWorkout() {
+    async function resetWorkout() {
       clearTimer();
+      clearTransitionTimer();
       currentExerciseIndex = 0;
       secondsRemaining = 0;
       isPaused = false;
       elements.progressBar.style.width = "0%";
+      await releaseWakeLock();
       showScreen("start");
     }
 
     async function loadWorkout() {
       try {
-        const response = await fetch("./workout.json", {
-          cache: "no-store"
-        });
-
+        const response = await fetch("./workout.json", { cache: "no-store" });
         if (!response.ok) {
           throw new Error(`Workout request failed: ${response.status}`);
         }
 
         workout = await response.json();
 
-        if (
-          !workout ||
-          !Array.isArray(workout.exercises) ||
-          workout.exercises.length === 0
-        ) {
+        if (!workout || !Array.isArray(workout.exercises) || workout.exercises.length === 0) {
           throw new Error("Workout file contains no exercises.");
         }
 
@@ -563,6 +524,15 @@
         showScreen("error");
       }
     }
+
+    document.addEventListener("visibilitychange", async () => {
+      if (
+        document.visibilityState === "visible" &&
+        screens.workout.classList.contains("active")
+      ) {
+        await requestWakeLock();
+      }
+    });
 
     buttons.start.addEventListener("click", startWorkout);
     buttons.pause.addEventListener("click", togglePause);
