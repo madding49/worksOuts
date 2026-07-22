@@ -17,13 +17,17 @@
       "instruction": "Stand tall and march at an easy pace."
     },
     {
-      "id": "sit-to-stand",
-      "section": "Strength",
-      "name": "Squats",
-      "durationSeconds": 40,
-      "instruction": "Squat slowly.",
-      "media": "media/squats.mp4"
-    },
+  "name": "Squats",
+  "section": "Strength",
+  "durationSeconds": 80,
+  "instruction": "Lower slowly and return to standing.",
+  "frames": [
+    "media/squats-standing.png",
+    "media/squats-bottom.png"
+  ],
+  "frameDurationMs": 4000,
+  "pingPong": true
+  },
     {
       "id": "wall-push-ups",
       "section": "Strength",
